@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>PennCloud - View Email</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-penn-blue {
+            background-color: #01256E !important;
+        }
+
+        .navbar-brand img {
+            height: 35px;
+            margin-right: 10px;
+        }
+
+        .btn-penn-blue {
+            background-color: #01256E;
+            border-color: #01256E;
+            color: white;
+        }
+
+        .btn-penn-blue:hover {
+            background-color: #011a4d;
+            border-color: #011a4d;
+            color: white;
+        }
+
+        .email-header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .email-body {
+            padding: 20px;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            min-height: 200px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        /* Gmail-style action buttons */
+        .email-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .gmail-btn {
+            padding: 8px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border: 1px solid #dadce0;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, 0.1);
+        }
+
+        .gmail-btn:hover {
+            box-shadow: 0 2px 4px 0 rgba(60, 64, 67, 0.15);
+            border-color: #dadce0;
+        }
+
+        .gmail-btn-primary {
+            background-color: #1a73e8;
+            color: white;
+            border-color: #1a73e8;
+        }
+
+        .gmail-btn-primary:hover {
+            background-color: #1557b0;
+            border-color: #1557b0;
+            color: white;
+        }
+
+        .gmail-btn-secondary {
+            background-color: white;
+            color: #5f6368;
+        }
+
+        .gmail-btn-secondary:hover {
+            background-color: #f8f9fa;
+            color: #202124;
+        }
+
+        .gmail-btn-danger {
+            background-color: white;
+            color: #d93025;
+            border-color: #dadce0;
+        }
+
+        .gmail-btn-danger:hover {
+            background-color: #fce8e6;
+            border-color: #d93025;
+            color: #d93025;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-penn-blue">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <img src="/images/upenn_logo.png" alt="UPenn Logo">
+                <strong>PennCloud</strong>
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/inbox">Inbox</a>
+                <a class="nav-link" href="/drive">Drive</a>
+                <a class="nav-link" href="/logout">Logout</a>
+                <span class="navbar-text text-white ms-3">
+                    👤 <strong><!-- USERNAME_PLACEHOLDER --></strong>
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main content -->
+    <div class="container mt-4">
+        <div class="mb-3">
+            <a href="/inbox" class="btn btn-outline-secondary">
+                ← Back to Inbox
+            </a>
+        </div>
+
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <div class="email-header">
+                    <h4 class="mb-3"><!-- SUBJECT_PLACEHOLDER --></h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1">
+                                <strong>From:</strong>
+                                <span class="text-muted"><!-- FROM_PLACEHOLDER --></span>
+                            </p>
+                            <p class="mb-1">
+                                <strong>To:</strong>
+                                <span class="text-muted"><!-- TO_PLACEHOLDER --></span>
+                            </p>
+                        </div>
+                        <div class="col-md-6 text-md-end">
+                            <p class="mb-1">
+                                <strong>Date:</strong>
+                                <span class="text-muted"><!-- DATE_PLACEHOLDER --></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="email-body">
+                    <!-- BODY_PLACEHOLDER -->
+                </div>
+
+                <!-- Action buttons -->
+                <div class="mt-4 email-actions">
+                    <a href="/mail/reply?id=<!-- EMAIL_ID_PLACEHOLDER -->" class="gmail-btn gmail-btn-primary">
+                        Reply
+                    </a>
+                    <a href="/mail/forward?id=<!-- EMAIL_ID_PLACEHOLDER -->" class="gmail-btn gmail-btn-secondary">
+                        Forward
+                    </a>
+                    <form method="POST" action="/mail/delete" style="display: inline; margin: 0;">
+                        <input type="hidden" name="email_id" value="<!-- EMAIL_ID_PLACEHOLDER -->">
+                        <button type="submit" class="gmail-btn gmail-btn-danger" onclick="return confirm('Are you sure you want to delete this email?');">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

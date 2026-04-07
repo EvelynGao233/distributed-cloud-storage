@@ -1,0 +1,77 @@
+syntax = "proto3";
+
+package kvstorage;
+
+// Coordinator manages global cluster view and heartbeats.
+service Coordinator {
+  // Called once when a KV server starts.
+  rpc Register(RegisterRequest) returns (RegisterResponse);
+
+  // Periodic heartbeat from KV server to coordinator.
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+
+  rpc GetClusterStatus(GetClusterStatusRequest) returns (ClusterStatusResponse);
+}
+
+// Basic information about a node.
+message NodeInfo {
+  string address = 1;  // gRPC listen address of the KV server
+}
+
+message RegisterRequest {
+  NodeInfo node = 1;
+}
+
+message RegisterResponse {
+  // Whether registration succeeded.
+  bool success = 1;
+}
+
+message HeartbeatRequest {
+  NodeInfo node = 1;
+  int64 known_view_version = 2; // Node's current GlobalView version
+}
+
+// A single partition's replication info.
+message PartitionInfo {
+  int64 view_id = 1;          // monotonically increasing version id
+  string start = 2;           // inclusive row range start ("" for -inf)
+  string end = 3;             // exclusive row range end ("" for +inf)
+  string primary = 4;         // primary node address
+  repeated string backups = 5; // backup node addresses
+}
+
+// Global view: list of partitions.
+message GlobalView {
+  repeated PartitionInfo partitions = 1;
+  int64 version = 2; // Coordinator's GlobalView version
+}
+
+message HeartbeatResponse {
+  // If true, caller should refresh its local view using `view`.
+  bool has_new_view = 1;
+
+  // Current global view (only populated when has_new_view == true).
+  GlobalView view = 2;
+}
+
+message NodeStatus {
+  string address = 1;
+  bool is_alive = 2;
+  int64 last_heartbeat_ms = 3;
+}
+
+message PartitionStatus {
+  int64 view_id = 1;
+  string start = 2;
+  string end = 3;
+  string primary = 4;
+  repeated string backups = 5;
+}
+
+message ClusterStatusResponse {
+  repeated NodeStatus nodes = 1;
+  repeated PartitionStatus partitions = 2;
+}
+
+message GetClusterStatusRequest {}

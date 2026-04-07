@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>PennCloud - Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-penn-blue {
+            background-color: #01256E !important;
+        }
+
+        .navbar-brand img {
+            height: 35px;
+            margin-right: 10px;
+        }
+
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .card-header-penn {
+            background-color: #01256E;
+            color: white;
+        }
+
+        .badge-alive {
+            background-color: #28a745;
+        }
+
+        .badge-dead {
+            background-color: #dc3545;
+        }
+
+        .table-sm td,
+        .table-sm th {
+            padding: 0.3rem 0.4rem;
+        }
+
+        .raw-data-key {
+            font-family: monospace;
+        }
+
+        .raw-data-val {
+            max-width: 300px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-penn-blue">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <img src="/images/upenn_logo.png" alt="UPenn Logo">
+                <strong>PennCloud</strong>
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/inbox">Inbox</a>
+                <a class="nav-link" href="/drive">Drive</a>
+                <a class="nav-link" href="/logout">Logout</a>
+                <span class="navbar-text text-white ms-3">
+                    👤 <strong><!-- USERNAME_PLACEHOLDER --></strong>
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid mt-4">
+        <div class="row g-3">
+            <div class="col-lg-4">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header card-header-penn">
+                        <strong>Cluster Nodes</strong>
+                        <small class="ms-2 text-white-50">(Frontend nodes show gRPC control port; HTTP port = gRPC port
+                            - 1000)</small>
+                    </div>
+                    <div class="card-body p-2">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Address</th>
+                                        <th>Status</th>
+                                        <th>Last Heartbeat (ms)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- NODE_TABLE_PLACEHOLDER -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-header card-header-penn">
+                        <strong>Partitions</strong>
+                    </div>
+                    <div class="card-body p-2">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>View</th>
+                                        <th>Range</th>
+                                        <th>Primary</th>
+                                        <th>Backups</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- PARTITION_TABLE_PLACEHOLDER -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <div class="card shadow-sm mb-3">
+                    <div class="card-header card-header-penn d-flex justify-content-between align-items-center">
+                        <strong>Admin Console</strong>
+                        <small>Inspect data &amp; send control commands</small>
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <!-- ADMIN_MESSAGE_PLACEHOLDER -->
+                        </div>
+
+                        <form method="POST" action="/admin_control" class="row gy-2 gx-3 align-items-center mb-3">
+                            <div class="col-md-5">
+                                <label class="form-label mb-1">Target Node</label>
+                                <select name="node" class="form-select form-select-sm"
+                                    onchange="if(this.value){ window.location='/admin?node='+encodeURIComponent(this.value); }">
+                                    <!-- NODE_OPTIONS_PLACEHOLDER -->
+                                </select>
+                            </div>
+                            <div class="col-md-7 d-flex align-items-end gap-2">
+                                <div>
+                                    <label class="form-label mb-1">Actions</label>
+                                    <div>
+                                        <button class="btn btn-sm btn-danger" name="cmd" value="shutdown" type="submit">
+                                            Shutdown
+                                        </button>
+                                        <button class="btn btn-sm btn-success ms-1" name="cmd" value="restart"
+                                            type="submit">
+                                            Restart
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Raw data table -->
+                        <div class="card border-0">
+                            <div class="card-body p-0">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0">Raw Key/Column/Value</h6>
+                                    <div>
+                                        <!-- PAGINATION_PLACEHOLDER -->
+                                    </div>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-sm table-striped align-middle mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th style="width: 30%;">Row Key</th>
+                                                <th style="width: 20%;">Column</th>
+                                                <th style="width: 50%;">Value</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <!-- RAW_DATA_TABLE_PLACEHOLDER -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

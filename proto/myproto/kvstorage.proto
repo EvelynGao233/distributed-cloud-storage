@@ -1,0 +1,176 @@
+syntax = "proto3";
+
+package kvstorage;
+
+// KV Storage Service Definition
+service KvStorage {
+  // Put: Store or update key-value pairs.
+  rpc Put(PutRequest) returns (PutResponse);
+
+  // Get: Retrieve the value for a given key.
+  rpc Get(GetRequest) returns (GetResponse);
+
+  // Cput: Compare-and-Put operation for conditional updates.
+  rpc Cput(CputRequest) returns (CputResponse);
+
+  // Delete: Remove key-value pairs.
+  rpc Delete(DeleteRequest) returns (DeleteResponse);
+
+  // Replicate: internal replication RPC from primary to backups.
+  rpc Replicate(LogEntry) returns (Ack);
+
+  rpc DumpTablet(DumpTabletRequest) returns (DumpTabletResponse);
+
+  rpc GetRawData(RawDataRequest) returns (RawDataResponse);
+
+  rpc AdminControl(ControlRequest) returns (ControlResponse);
+
+  rpc WriteControl(WriteControlRequest) returns (WriteControlResponse);
+
+  rpc FetchSnapshot(FetchSnapshotRequest) returns (stream FetchSnapshotResponse);
+
+  rpc FetchWAL(FetchWALRequest) returns (FetchWALResponse);
+}
+
+message PutRequest {
+  string r = 1;  // row key
+  string c = 2;  // column key
+  bytes v = 3;   // value (bytes for arbitrary binary data)
+}
+
+message PutResponse {
+  bool success = 1;  // is the operation successful
+}
+
+message GetRequest {
+  string r = 1;  // row key
+  string c = 2;  // column key
+}
+
+message GetResponse {
+  bytes v = 1;        // value
+  bool found = 2;     // whether the key was found
+}
+
+message CputRequest {
+  string r = 1;      // row key
+  string c = 2;      // column key
+  bytes v_old = 3;   // current expected value
+  bytes v_new = 4;   // new value to store
+}
+
+message CputResponse {
+  bool success = 1;  // whether the operation was successful
+}
+
+message DeleteRequest {
+  string r = 1;  // row key
+  string c = 2;  // column key
+}
+
+message DeleteResponse {
+  bool success = 1;  // is the operation successful
+}
+
+// Log entry used for replication between primary and backups.
+message LogEntry {
+  enum OpType {
+    OP_UNKNOWN = 0;
+    OP_PUT = 1;
+    OP_DELETE = 2;
+    OP_CPUT = 3;
+  }
+
+  OpType op_type = 1;  // Operation type: PUT or DELETE
+  string r = 2;        // row key
+  string c = 3;        // column key
+  bytes v = 4;         // value for PUT; empty for DELETE
+  bytes v_old = 5;    // old value for CPUT; empty otherwise
+  bytes v_new = 6;    // new value for CPUT; empty otherwise
+  int64 term = 7;      // logical term/view identifier
+  int64 lsn = 8;
+}
+
+// Simple acknowledgement for replication.
+message Ack {
+  bool success = 1;
+}
+
+message DumpTabletRequest {
+}
+
+message DumpTabletResponse {
+  message Cell {
+    string r = 1;  // row key
+    string c = 2;  // column key
+    bytes v = 3;   // value
+  }
+
+  repeated Cell cells = 1;
+}
+
+message RawDataRequest {
+  string start_key = 1; // Starting with which key (an empty string indicates starting from the beginning)
+  int32 limit = 2;      // How many records to retrieve at once (e.g., 10)
+}
+
+message RawDataResponse {
+  message Entry {
+    string key = 1;
+    string col = 2;
+    bytes val = 3;
+  }
+  repeated Entry entries = 1;
+  string next_start_key = 2; // Key to start of next page
+  bool has_more = 3;
+}
+
+message ControlRequest {
+  enum Command {
+    SHUTDOWN = 0;
+    RESTART = 1;
+  }
+  Command cmd = 1;
+}
+
+message ControlResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message WriteControlRequest {
+  enum Mode {
+    PAUSE = 0;
+    RESUME = 1;
+  }
+  Mode mode = 1;
+}
+
+message WriteControlResponse {
+  bool success = 1;
+}
+
+message FetchSnapshotRequest {
+  string start = 1;
+  string end = 2;
+}
+
+message FetchSnapshotResponse {
+  message Cell {
+    string r = 1;
+    string c = 2;
+    bytes v = 3;
+  }
+  repeated Cell cells = 1;
+  int64 snapshot_lsn = 2;
+}
+
+message FetchWALRequest {
+  int64 from_lsn = 1;
+}
+
+message FetchWALResponse {
+  repeated LogEntry entries = 1;
+  int64 next_lsn = 2;
+  bool has_more = 3;
+}
